@@ -1,0 +1,268 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Hello Vishwas • Login</title>
+  <style>
+    :root{
+      --bg: #0b0c10;
+      --card: #111319;
+      --ink: #e8ecf1;
+      --muted:#9aa3af;
+      --accent:#6ee7b7;
+      --accent-ink:#064e3b;
+      --danger:#ef4444;
+      --ring:#22d3ee;
+    }
+    @media (prefers-color-scheme: light){
+      :root{
+        --bg:#f6f7fb;
+        --card:#ffffff;
+        --ink:#1f2937;
+        --muted:#6b7280;
+        --accent:#10b981;
+        --accent-ink:#065f46;
+        --danger:#dc2626;
+        --ring:#06b6d4;
+      }
+    }
+    *{box-sizing:border-box}
+    html,body{height:100%}
+    body{
+      margin:0;
+      font:16px/1.5 system-ui,-apple-system,Segoe UI,Roboto,Inter,Arial,sans-serif;
+      background:
+        radial-gradient(1000px 600px at 10% -10%, rgba(34,211,238,.15), transparent 60%),
+        radial-gradient(800px 500px at 110% 110%, rgba(16,185,129,.12), transparent 60%),
+        var(--bg);
+      color:var(--ink);
+      display:grid;
+      place-items:center;
+      padding:24px;
+    }
+    .wrap{
+      width:100%;
+      max-width:420px;
+      background:var(--card);
+      border:1px solid rgba(255,255,255,.06);
+      border-radius:20px;
+      box-shadow:0 10px 30px rgba(0,0,0,.25);
+      overflow:hidden;
+    }
+    header{
+      padding:28px 24px 8px;
+    }
+    h1{
+      margin:0;
+      font-size:clamp(22px, 3.5vw, 28px);
+      letter-spacing:.2px;
+    }
+    p.sub{
+      margin:.35rem 0 0;
+      color:var(--muted);
+      font-size:14px;
+    }
+    .card{
+      padding:20px 24px 28px;
+    }
+    label{
+      display:block;
+      font-size:13px;
+      color:var(--muted);
+      margin-bottom:8px;
+    }
+    .field{
+      position:relative;
+    }
+    input[type=password]{
+      width:100%;
+      padding:14px 14px 14px 14px;
+      border-radius:12px;
+      border:1.5px solid rgba(255,255,255,.14);
+      background:transparent;
+      color:var(--ink);
+      outline:none;
+      font-size:16px;
+      transition:border-color .15s, box-shadow .15s, background .15s, transform .15s;
+    }
+    input[type=password]:focus{
+      border-color: var(--ring);
+      box-shadow:0 0 0 4px rgba(34,211,238,.18);
+      background:rgba(255,255,255,.02);
+    }
+    .hint{
+      margin-top:10px;
+      font-size:12px;
+      color:var(--muted);
+      display:flex;
+      align-items:center;
+      gap:8px;
+      min-height:20px;
+    }
+    .hint.ok{ color: var(--accent); }
+    .hint.err{ color: var(--danger); }
+
+    /* Shake on error */
+    .shake{
+      animation:shake .28s ease-in-out 0s 1;
+    }
+    @keyframes shake{
+      0%{transform:translateX(0)}
+      25%{transform:translateX(-6px)}
+      50%{transform:translateX(6px)}
+      75%{transform:translateX(-4px)}
+      100%{transform:translateX(0)}
+    }
+
+    /* Pages */
+    .page{ display:none; }
+    .page.active{ display:block; }
+
+    /* Welcome page styling */
+    .welcome{
+      text-align:center;
+      padding:48px 28px 56px;
+    }
+    .welcome h2{
+      font-size:clamp(24px, 4vw, 34px);
+      margin:0 0 10px;
+      background: linear-gradient(90deg, var(--accent), #38bdf8 60%, #c084fc);
+      -webkit-background-clip:text;
+      background-clip:text;
+      color:transparent;
+    }
+    .welcome p{
+      color:var(--muted);
+      margin:0;
+      font-size:15px;
+    }
+
+    /* Tiny footer */
+    .foot{
+      text-align:center;
+      font-size:12px;
+      color:var(--muted);
+      padding:12px 0 0;
+    }
+
+    /* Mobile tweaks */
+    @media (max-width:420px){
+      .card{ padding:18px 16px 24px; }
+      header{ padding:22px 16px 6px; }
+    }
+  </style>
+</head>
+<body>
+  <main class="wrap" aria-live="polite">
+    <!-- PAGE 1: LOGIN -->
+    <section id="loginPage" class="page active" aria-label="Login page">
+      <header>
+        <h1>Hello Vishwas</h1>
+        <p class="sub">Enter your password to continue</p>
+      </header>
+      <div class="card">
+        <label for="pw">Password</label>
+        <div class="field">
+          <input
+            id="pw"
+            name="pw"
+            type="password"
+            inputmode="text"
+            autocomplete="current-password"
+            placeholder="Type the secret..."
+            aria-describedby="pwHint"
+            aria-label="Password, type carefully; pasting is disabled"
+          />
+        </div>
+        <div id="pwHint" class="hint" role="status" aria-live="polite"></div>
+        <div class="foot">No submit button — verification happens as you type.</div>
+      </div>
+    </section>
+
+    <!-- PAGE 2: WELCOME -->
+    <section id="homePage" class="page" aria-label="Welcome page">
+      <div class="welcome">
+        <h2>Welcome to Mudranalayam</h2>
+        <p>Access granted. Have a great session!</p>
+      </div>
+    </section>
+  </main>
+
+  <script>
+    (function(){
+      const SECRET = "Vishwas_9880875322";         // exact required password
+      const pw = document.getElementById('pw');
+      const hint = document.getElementById('pwHint');
+      const loginPage = document.getElementById('loginPage');
+      const homePage  = document.getElementById('homePage');
+
+      // Enforce letter-by-letter typing: disable paste, drop, autocomplete tricks
+      pw.addEventListener('paste', e => e.preventDefault());
+      pw.addEventListener('drop',  e => e.preventDefault());
+      pw.setAttribute('autocapitalize','off');
+      pw.setAttribute('spellcheck','false');
+
+      // Real-time letter-by-letter verification
+      pw.addEventListener('input', () => {
+        const val = pw.value; // do not trim—enforce exact sequence
+        if (val.length === 0){
+          hint.className = 'hint';
+          hint.textContent = '';
+          return;
+        }
+
+        if (SECRET.startsWith(val)) {
+          // So far so good
+          hint.className = 'hint ok';
+          hint.textContent = `● ${val.length} / ${SECRET.length}`;
+
+          if (val === SECRET) {
+            // Full match -> go to next "page"
+            goToWelcome();
+          }
+        } else {
+          // Wrong character -> shake + clear after a short moment
+          hint.className = 'hint err';
+          hint.textContent = '✗ Incorrect character. Try again.';
+          pw.classList.add('shake');
+          setTimeout(() => {
+            pw.classList.remove('shake');
+            pw.value = '';
+            hint.className = 'hint';
+            hint.textContent = '';
+            pw.focus();
+          }, 260);
+        }
+      });
+
+      // Optional: Enter key does nothing (no submit)
+      pw.addEventListener('keydown', (e) => {
+        if (e.key === 'Enter') e.preventDefault();
+      });
+
+      function goToWelcome(){
+        // Swap pages (single-file app)
+        loginPage.classList.remove('active');
+        homePage.classList.add('active');
+
+        // Update the document title and URL hash (acts like “next page”)
+        document.title = 'Welcome to Mudranalayam';
+        if (location.hash !== '#welcome') {
+          history.replaceState(null, '', '#welcome');
+        }
+      }
+
+      // If user reloads on #welcome, show the welcome page
+      if (location.hash === '#welcome') {
+        loginPage.classList.remove('active');
+        homePage.classList.add('active');
+        document.title = 'Welcome to Mudranalayam';
+      } else {
+        // focus the password box initially
+        setTimeout(() => pw.focus(), 300);
+      }
+    })();
+  </script>
+</body>
+</html>
